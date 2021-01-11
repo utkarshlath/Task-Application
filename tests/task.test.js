@@ -42,6 +42,19 @@ test('Should not delete other users tasks', async ()=>{
         .set('Authorization',`Bearer ${userTwo.tokens[0].token}`)
         .send()
         .expect(404)
-    const task = Task.findById(taskOne._id)
+    const task = await Task.findById(taskOne._id)
     expect(task).not.toBeNull()
+})
+
+test('Should not update other users tasks', async ()=>{
+    await request(app)
+    .patch(`/tasks/${taskOne._id}`)
+    .set('Authorization',`Bearer ${userTwo.tokens[0].token}`)
+    .send({
+        completed: true
+    })
+    .expect(404)
+    const task = await Task.findById(taskOne._id)
+    expect(task).not.toBeNull()
+    expect(task.completed).toEqual(false)
 })
